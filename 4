@@ -1,0 +1,177 @@
+# Knowledge Representation and Expert System
+# Forward Chaining and Backward Chaining
+
+# Initial facts
+facts = {"fever", "cough"}
+
+# Knowledge base: IF conditions THEN conclusion
+rules = [
+    ({"fever", "cough"}, "flu"),
+    ({"flu"}, "doctor_visit")
+]
+
+
+# ---------------- FORWARD CHAINING ----------------
+
+def forward_chaining(facts, rules, query):
+    known_facts = set(facts)
+
+    print("\n--- Forward Chaining ---")
+    print("Initial Facts:", ", ".join(sorted(known_facts)))
+
+    changed = True
+
+    while changed:
+        changed = False
+
+        for conditions, conclusion in rules:
+
+            if conditions.issubset(known_facts):
+                if conclusion not in known_facts:
+
+                    known_facts.add(conclusion)
+                    changed = True
+
+                    print(
+                        "Rule Applied:",
+                        " AND ".join(sorted(conditions)),
+                        "->",
+                        conclusion
+                    )
+
+                    print("New Fact:", conclusion)
+
+                    if conclusion == query:
+                        print("\nQuery:", query)
+                        print("Result: TRUE")
+                        return True
+
+    print("\nQuery:", query)
+    print("Result: FALSE")
+    return False
+
+
+# ---------------- BACKWARD CHAINING ----------------
+
+def backward_chaining(goal, facts, rules, visited=None):
+
+    if visited is None:
+        visited = set()
+
+    print("Trying to prove:", goal)
+
+    # Goal already known
+    if goal in facts:
+        print(goal, "is a known fact.")
+        return True
+
+    # Avoid infinite loops
+    if goal in visited:
+        return False
+
+    visited.add(goal)
+
+    # Find a rule that can produce the goal
+    for conditions, conclusion in rules:
+
+        if conclusion == goal:
+
+            print(
+                "Rule Found:",
+                " AND ".join(sorted(conditions)),
+                "->",
+                conclusion
+            )
+
+            # Prove all conditions
+            for condition in conditions:
+                if not backward_chaining(
+                    condition, facts, rules, visited
+                ):
+                    return False
+
+            print("Successfully proved:", goal)
+            return True
+
+    return False
+
+
+# ---------------- MAIN PROGRAM ----------------
+
+print("==============================================")
+print("   KNOWLEDGE REPRESENTATION AND EXPERT SYSTEM")
+print("==============================================")
+
+print("\nAvailable Facts:")
+print("fever")
+print("cough")
+
+query = input("\nEnter query: ").lower().strip()
+
+# Forward Chaining
+forward_result = forward_chaining(facts, rules, query)
+
+# Backward Chaining
+print("\n--- Backward Chaining ---")
+
+backward_result = backward_chaining(
+    query, facts, rules
+)
+
+print("\n==============================================")
+print("FINAL RESULTS")
+print("==============================================")
+
+print("Forward Chaining :", "TRUE" if forward_result else "FALSE")
+print("Backward Chaining:", "TRUE" if backward_result else "FALSE")
+
+if forward_result and backward_result:
+    print("Conclusion:", query, "is proved.")
+else:
+    print("Conclusion:", query, "cannot be proved.")
+
+print("==============================================")
+
+Input
+Enter query: doctor_visit
+
+Output
+==============================================
+   KNOWLEDGE REPRESENTATION AND EXPERT SYSTEM
+==============================================
+
+Available Facts:
+fever
+cough
+
+Enter query: doctor_visit
+
+--- Forward Chaining ---
+Initial Facts: cough, fever
+Rule Applied: cough AND fever -> flu
+New Fact: flu
+Rule Applied: flu -> doctor_visit
+New Fact: doctor_visit
+
+Query: doctor_visit
+Result: TRUE
+
+--- Backward Chaining ---
+Trying to prove: doctor_visit
+Rule Found: flu -> doctor_visit
+Trying to prove: flu
+Rule Found: cough AND fever -> flu
+Trying to prove: cough
+cough is a known fact.
+Trying to prove: fever
+fever is a known fact.
+Successfully proved: flu
+Successfully proved: doctor_visit
+
+==============================================
+FINAL RESULTS
+==============================================
+Forward Chaining : TRUE
+Backward Chaining: TRUE
+Conclusion: doctor_visit is proved.
+==============================================
