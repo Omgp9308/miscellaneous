@@ -1,0 +1,138 @@
+import heapq
+
+# Graph with edge costs
+graph = {
+    'A': [('B', 2), ('C', 4)],
+    'B': [('D', 3), ('E', 5)],
+    'C': [('F', 2)],
+    'D': [('G', 2)],
+    'E': [('G', 1)],
+    'F': [('G', 3)],
+    'G': []
+}
+
+# Heuristic values
+heuristic = {
+    'A': 6,
+    'B': 4,
+    'C': 4,
+    'D': 2,
+    'E': 1,
+    'F': 3,
+    'G': 0
+}
+
+
+# Greedy Best-First Search
+def greedy_best_first_search(start, goal):
+    priority_queue = []
+    heapq.heappush(priority_queue, (heuristic[start], start, [start]))
+
+    visited = set()
+
+    while priority_queue:
+        h, node, path = heapq.heappop(priority_queue)
+
+        if node in visited:
+            continue
+
+        visited.add(node)
+
+        if node == goal:
+            return path
+
+        for neighbour, cost in graph[node]:
+            if neighbour not in visited:
+                heapq.heappush(
+                    priority_queue,
+                    (heuristic[neighbour], neighbour, path + [neighbour])
+                )
+
+    return None
+
+
+# A* Search
+def a_star_search(start, goal):
+    priority_queue = []
+
+    # (f, g, node, path)
+    heapq.heappush(
+        priority_queue,
+        (heuristic[start], 0, start, [start])
+    )
+
+    best_cost = {start: 0}
+
+    while priority_queue:
+        f, g, node, path = heapq.heappop(priority_queue)
+
+        if node == goal:
+            return path, g
+
+        for neighbour, cost in graph[node]:
+            new_g = g + cost
+
+            if neighbour not in best_cost or new_g < best_cost[neighbour]:
+                best_cost[neighbour] = new_g
+                new_f = new_g + heuristic[neighbour]
+
+                heapq.heappush(
+                    priority_queue,
+                    (new_f, new_g, neighbour, path + [neighbour])
+                )
+
+    return None, None
+
+
+# Main program
+print("========== GREEDY BEST-FIRST SEARCH ==========")
+
+start = input("Enter Start Node: ").upper()
+goal = input("Enter Goal Node: ").upper()
+
+greedy_path = greedy_best_first_search(start, goal)
+
+if greedy_path:
+    print("\nGreedy Best-First Search Path:")
+    print(" -> ".join(greedy_path))
+else:
+    print("\nNo path found.")
+
+
+print("\n========== A* SEARCH ==========")
+
+a_star_path, a_star_cost = a_star_search(start, goal)
+
+if a_star_path:
+    print("\nA* Search Path:")
+    print(" -> ".join(a_star_path))
+    print("Path Cost:", a_star_cost)
+else:
+    print("\nNo path found.")
+
+print("\n==============================================")
+print("Both algorithms executed successfully.")
+print("==============================================")
+
+Input
+Enter Start Node: A
+Enter Goal Node: G
+
+Output
+========== GREEDY BEST-FIRST SEARCH ==========
+Enter Start Node: A
+Enter Goal Node: G
+
+Greedy Best-First Search Path:
+A -> B -> E -> G
+
+========== A* SEARCH ==========
+Enter Start Node: A
+Enter Goal Node: G
+
+A* Search Path:
+A -> B -> D -> G
+Path Cost: 7
+
+==============================================
+Both algorithms executed successfully.
