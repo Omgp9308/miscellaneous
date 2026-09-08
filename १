@@ -1,0 +1,156 @@
+ASSIGNMENT  1
+
+
+
+Name: Rohit Kailas Deore
+Roll no: 10
+Batch: S1
+Class: TE-IT
+
+
+
+Program:
+
+def smart_home_agent(
+    temperature,
+    motion,
+    light_level,
+    no_motion_minutes,
+    manual_command
+):
+
+    actions = []
+
+    print("\n--- Sensor Readings ---")
+    print("Temperature:", temperature, "°C")
+    print("Motion Detected:", motion)
+    print("Light Level:", light_level)
+    print("No Motion For:", no_motion_minutes, "minutes")
+
+    # Manual user command has highest priority
+    if manual_command != "none":
+        actions.append("Follow User Command: " + manual_command)
+
+    else:
+
+        # Light control
+        if motion and light_level == "dark":
+            actions.append("Turn ON Lights")
+
+        elif not motion and no_motion_minutes >= 10:
+            actions.append("Turn OFF Lights")
+
+        # AC control
+        if temperature > 28:
+            actions.append("Turn ON AC")
+
+        elif temperature < 24:
+            actions.append("Turn OFF AC")
+
+        # If no action is required
+        if not actions:
+            actions.append("No action required")
+
+    return actions
+
+
+# ---------------- MAIN PROGRAM ----------------
+
+print("==============================================")
+print("       SMART HOME INTELLIGENT AGENT")
+print("==============================================")
+
+print("\nEnter Smart Home Sensor Information")
+
+temperature = float(input("Enter room temperature (°C): "))
+
+motion_input = input(
+    "Is motion detected? (yes/no): "
+).lower()
+
+motion = motion_input == "yes"
+
+light_level = input(
+    "Enter light level (bright/dark): "
+).lower()
+
+no_motion_minutes = int(
+    input("Enter minutes since last motion: ")
+)
+
+manual_command = input(
+    "Enter manual command (none / lights on / lights off / ac on / ac off): "
+).lower()
+
+
+# Run intelligent agent
+actions = smart_home_agent(
+    temperature,
+    motion,
+    light_level,
+    no_motion_minutes,
+    manual_command
+)
+
+
+# Display decisions
+print("\n--- Agent Decision ---")
+
+for action in actions:
+    print("Action:", action)
+
+print("\n==============================================")
+print("Smart Home Agent executed successfully.")
+print("==============================================")
+
+
+Output :
+
+==============================================
+       SMART HOME INTELLIGENT AGENT
+==============================================
+
+Enter Smart Home Sensor Information
+Enter room temperature (°C): 29
+Is motion detected? (yes/no): yes
+Enter light level (bright/dark): dark
+Enter minutes since last motion: 5
+Enter manual command (none / lights on / lights off / ac on / ac off): none
+
+--- Sensor Readings ---
+Temperature: 29.0 °C
+Motion Detected: True
+Light Level: dark
+No Motion For: 5 minutes
+
+--- Agent Decision ---
+Action: Turn ON Lights
+Action: Turn ON AC
+
+==============================================
+Smart Home Agent executed successfully.
+==============================================
+
+==============================================
+       SMART HOME INTELLIGENT AGENT
+==============================================
+
+Enter Smart Home Sensor Information
+Enter room temperature (°C): 29
+Is motion detected? (yes/no): no
+Enter light level (bright/dark): dark
+Enter minutes since last motion: 5
+Enter manual command (none / lights on / lights off / ac on / ac off): none
+
+--- Sensor Readings ---
+Temperature: 29.0 °C
+Motion Detected: False
+Light Level: dark
+No Motion For: 5 minutes
+
+--- Agent Decision ---
+Action: Turn ON AC
+
+==============================================
+Smart Home Agent executed successfully.
+==============================================
